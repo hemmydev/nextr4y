@@ -1,0 +1,15 @@
+{
+  "BaseURL": "https://www.goodreads.com/",
+  "AssetBaseURL": "https://www.goodreads.com/",
+  "IsNextJS": false,
+  "BuildID": "",
+  "AssetPrefix": "",
+  "Routes": {},
+  "AllAssets": {},
+  "ManifestFound": false,
+  "ManifestExecOK": false,
+  "ExecutionError": {},
+  "NextDataJSONRaw": "",
+  "DetectedNextVersion": "",
+  "DetectedReactVersion": ""
+}

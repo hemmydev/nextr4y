@@ -1,0 +1,15 @@
+{
+  "BaseURL": "https://claude.ai",
+  "AssetBaseURL": "https://claude.ai",
+  "IsNextJS": false,
+  "BuildID": "",
+  "AssetPrefix": "",
+  "Routes": {},
+  "AllAssets": {},
+  "ManifestFound": false,
+  "ManifestExecOK": false,
+  "ExecutionError": {},
+  "NextDataJSONRaw": "",
+  "DetectedNextVersion": "",
+  "DetectedReactVersion": ""
+}
