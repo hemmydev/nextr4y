@@ -4,6 +4,7 @@
 *.dll
 *.so
 *.dylib
+nextr4y
 
 # Test binary, built with `go test -c`
 *.test
