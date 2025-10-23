@@ -1,0 +1,26 @@
+Next.js Analysis Result for https://claude.ai
+=============================================
+
+Analysis Date: 2025-10-23 19:19
+Script: nextjs_analyzer.py
+Status: FAILED
+
+Error Details:
+--------------
+The analysis failed with a 403 Forbidden error when attempting to fetch the main page.
+This indicates that claude.ai has bot protection mechanisms that block automated requests.
+
+Error Message: "403 Client Error: Forbidden for url: https://claude.ai/"
+
+Next Steps:
+-----------
+To successfully analyze this site, the script would need to:
+1. Use more sophisticated browser automation (e.g., Selenium, Playwright)
+2. Implement proper headers and cookies to mimic a real browser
+3. Potentially use authenticated sessions
+4. Respect the site's robots.txt and terms of service
+
+Previous Scan Result:
+---------------------
+The Go-based nextr4y scanner also encountered issues (status 421) and determined
+that claude.ai does not use the Next.js framework.
