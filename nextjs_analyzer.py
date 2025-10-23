@@ -8,7 +8,7 @@ and generates comprehensive documentation of API endpoints and resources.
 
 import re
 import json
-import requests
+from curl_cffi import requests
 from pathlib import Path
 from urllib.parse import urljoin, urlparse
 from bs4 import BeautifulSoup
@@ -19,18 +19,18 @@ import time
 
 
 class NextJSAnalyzer:
-    def __init__(self, base_url: str, output_dir: str = "nextjs_analysis"):
+    def __init__(self, base_url: str, output_dir: str = "nextjs_analysis", html_file: str = None):
         self.base_url = base_url.rstrip('/')
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(exist_ok=True)
         self.chunks_dir = self.output_dir / "chunks"
         self.chunks_dir.mkdir(exist_ok=True)
-        
+        self.html_file = html_file
+
+        # Use curl_cffi session with Chrome impersonation to bypass bot detection
         self.session = requests.Session()
-        self.session.headers.update({
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-        })
-        
+        self.impersonate = "chrome120"  # Impersonate Chrome 120
+
         self.discovered_files: Set[str] = set()
         self.api_endpoints: List[Dict[str, Any]] = []
         self.routes: List[str] = []
@@ -39,13 +39,22 @@ class NextJSAnalyzer:
         
     def fetch_page(self, url: str) -> str:
         """Fetch a page and return its content."""
-        try:
-            response = self.session.get(url, timeout=10)
-            response.raise_for_status()
-            return response.text
-        except Exception as e:
-            print(f"Error fetching {url}: {e}")
-            return ""
+        # Try multiple browser impersonations
+        browsers = ["chrome120", "chrome119", "edge101", "safari15_5"]
+
+        for browser in browsers:
+            try:
+                print(f"  Trying with {browser} impersonation...")
+                response = self.session.get(url, timeout=30, impersonate=browser)
+                response.raise_for_status()
+                print(f"  ✓ Success with {browser}!")
+                return response.text
+            except Exception as e:
+                print(f"  ✗ Failed with {browser}: {e}")
+                continue
+
+        print(f"Error: All browser impersonations failed for {url}")
+        return ""
     
     def extract_static_files(self, html: str, page_url: str) -> Set[str]:
         """Extract all _next/static references from HTML."""
@@ -78,17 +87,17 @@ class NextJSAnalyzer:
     def download_file(self, url: str) -> str:
         """Download a file and save it locally."""
         try:
-            response = self.session.get(url, timeout=10)
+            response = self.session.get(url, timeout=30, impersonate=self.impersonate)
             response.raise_for_status()
-            
+
             # Create filename from URL
             parsed = urlparse(url)
             path_parts = parsed.path.split('/')
             filename = '_'.join(path_parts[-3:])  # Take last 3 parts
-            
+
             filepath = self.chunks_dir / filename
             filepath.write_text(response.text, encoding='utf-8')
-            
+
             print(f"Downloaded: {filename}")
             return response.text
         except Exception as e:
@@ -290,13 +299,21 @@ class NextJSAnalyzer:
     def run(self):
         """Main execution flow."""
         print(f"Starting analysis of: {self.base_url}\n")
-        
-        # Fetch main page
-        print("Fetching main page...")
-        html = self.fetch_page(self.base_url)
-        if not html:
-            print("Failed to fetch main page")
-            return
+
+        # Fetch main page or read from file
+        if self.html_file:
+            print(f"Reading HTML from file: {self.html_file}")
+            try:
+                html = Path(self.html_file).read_text(encoding='utf-8')
+            except Exception as e:
+                print(f"Failed to read HTML file: {e}")
+                return
+        else:
+            print("Fetching main page...")
+            html = self.fetch_page(self.base_url)
+            if not html:
+                print("Failed to fetch main page")
+                return
         
         # Extract static files
         print("Extracting static file references...")
@@ -346,10 +363,14 @@ def main():
         default='nextjs_analysis',
         help='Output directory (default: nextjs_analysis)'
     )
-    
+    parser.add_argument(
+        '--html-file',
+        help='Path to pre-fetched HTML file (bypasses fetching)'
+    )
+
     args = parser.parse_args()
-    
-    analyzer = NextJSAnalyzer(args.url, args.output)
+
+    analyzer = NextJSAnalyzer(args.url, args.output, args.html_file)
     analyzer.run()
 
 

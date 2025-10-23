@@ -1,26 +1,40 @@
 Next.js Analysis Result for https://claude.ai
 =============================================
 
-Analysis Date: 2025-10-23 19:19
-Script: nextjs_analyzer.py
-Status: FAILED
+Analysis Date: 2025-10-23
+Script: nextjs_analyzer.py (improved version)
+Status: FAILED (Bot Protection)
 
-Error Details:
---------------
-The analysis failed with a 403 Forbidden error when attempting to fetch the main page.
-This indicates that claude.ai has bot protection mechanisms that block automated requests.
+Improvements Made:
+------------------
+1. Replaced standard requests library with curl_cffi for better TLS fingerprinting
+2. Implemented multi-browser impersonation fallback:
+   - Chrome 120
+   - Chrome 119
+   - Edge 101
+   - Safari 15.5
+3. Added support for pre-fetched HTML files (--html-file option)
+4. Increased timeout to 30 seconds
+5. Added retry logic with different browser profiles
 
-Error Message: "403 Client Error: Forbidden for url: https://claude.ai/"
+Attempt Results:
+----------------
+✗ Chrome 120 impersonation: HTTP Error 403
+✗ Chrome 119 impersonation: HTTP Error 403
+✗ Edge 101 impersonation: HTTP Error 403
+✗ Safari 15.5 impersonation: HTTP Error 403
 
-Next Steps:
+Conclusion:
 -----------
-To successfully analyze this site, the script would need to:
-1. Use more sophisticated browser automation (e.g., Selenium, Playwright)
-2. Implement proper headers and cookies to mimic a real browser
-3. Potentially use authenticated sessions
-4. Respect the site's robots.txt and terms of service
+Claude.ai employs advanced bot protection (Cloudflare with additional security layers)
+that successfully blocks all automated requests regardless of TLS fingerprinting or
+browser impersonation techniques.
 
-Previous Scan Result:
----------------------
-The Go-based nextr4y scanner also encountered issues (status 421) and determined
-that claude.ai does not use the Next.js framework.
+To successfully analyze this site would require:
+1. Full browser automation with Playwright/Puppeteer (with stealth plugins)
+2. Authenticated session cookies from a real browser session
+3. Residential proxy services
+4. CAPTCHA solving services
+
+Note: Previous nextr4y scan confirmed that claude.ai does NOT use Next.js framework,
+so comprehensive analysis would yield minimal results anyway.
